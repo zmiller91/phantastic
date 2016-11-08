@@ -36,7 +36,7 @@ def getPhabricatorRev(url):
     return pathParts[1][1:]
 
 def getPhabricatorDifferential(rev):
-    curl = "curl https://" + config.PHAB_URL + "/api/differential.query -d api.token=" + config.PHAB_URL  + " -d ids[0]=" + str(rev)
+    curl = "curl https://" + config.PHAB_URL + "/api/differential.query -d api.token=" + config.PHAB_KEY  + " -d ids[0]=" + str(rev)
     return subprocess.check_output(curl, shell=True)
 
 def parse_slack_output(slack_rtm_output):
@@ -50,22 +50,23 @@ def parse_slack_output(slack_rtm_output):
                         rev = getPhabricatorRev(url)
                         query = json.loads(getPhabricatorDifferential(rev))
                         if int(query["result"][0]["lineCount"]) > 1000:
+                            print "nasty"
                             slack.api_call("reactions.add", token=config.SLACK_KEY, channel=output["channel"], name="vomit", timestamp=output["ts"])
                 except:
                     print "your shits broken"
 
 # test case
-#parse_slack_output([{'text': 'heres my rev <https://' + config.PHAB_URL + '/D69>', 'ts': u'1478567644.000078', 'user': 'U0ER0VB6G', 'team': 'T03SP91MM', 'type': 'message', 'channel': 'G1DQUMK9D'}])
+parse_slack_output([{'text': 'heres my rev <https://' + config.PHAB_URL + '/D69>', 'ts': u'1478567644.000078', 'user': 'U0ER0VB6G', 'team': 'T03SP91MM', 'type': 'message', 'channel': 'G1DQUMK9D'}])
 #parse_slack_output([{'text': 'heres my rev https://' + config.PHAB_URL + '/D69', 'ts': u'1478567644.000078', 'user': 'U0ER0VB6G', 'team': 'T03SP91MM', 'type': 'message', 'channel': 'G1DQUMK9D'}])
 
-if __name__ == "__main__":
-    READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
-    if slack.rtm_connect():
-        print("Phantastic connected and running!")
-        while True:
-            parse_slack_output(slack.rtm_read())
-            time.sleep(READ_WEBSOCKET_DELAY)
-    else:
-        print("Connection failed. Invalid Slack token or bot ID?")
+# if __name__ == "__main__":
+#     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+#     if slack.rtm_connect():
+#         print("Phantastic connected and running!")
+#         while True:
+#             parse_slack_output(slack.rtm_read())
+#             time.sleep(READ_WEBSOCKET_DELAY)
+#     else:
+#         print("Connection failed. Invalid Slack token or bot ID?")
 
 
