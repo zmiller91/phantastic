@@ -55,7 +55,7 @@ def parse_slack_output(slack_rtm_output):
                             emoji = "angryeyes"
                             if count > 3000:
                                 emoji = "shit"
-                            if count > 2000:
+                            elif count > 2000:
                                 emoji = "vomit"
 
                             slack.api_call("reactions.add", token=config.SLACK_KEY, channel=output["channel"], name=emoji, timestamp=output["ts"])
