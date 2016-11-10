@@ -49,9 +49,16 @@ def parse_slack_output(slack_rtm_output):
                         url = getPhabricatorUrl(output["text"])
                         rev = getPhabricatorRev(url)
                         query = json.loads(getPhabricatorDifferential(rev))
-                        if int(query["result"][0]["lineCount"]) > 1000:
+                        count = int(query["result"][0]["lineCount"])
+                        if count > 1000:
                             print "nasty"
-                            slack.api_call("reactions.add", token=config.SLACK_KEY, channel=output["channel"], name="vomit", timestamp=output["ts"])
+                            emoji = "angryeyes"
+                            if count > 3000:
+                                emoji = "shit"
+                            if count > 2000:
+                                emoji = "vomit"
+
+                            slack.api_call("reactions.add", token=config.SLACK_KEY, channel=output["channel"], name=emoji, timestamp=output["ts"])
                 except:
                     print "your shits broken"
 
